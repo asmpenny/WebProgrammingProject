@@ -59,6 +59,7 @@
 <body>
     <h1>Sweet Treats</h1>
     <h2>Products</h2>
+    <button onclick="loadProducts()">Load Products</button>
     <table>
         <thead>
             <tr>
@@ -73,11 +74,44 @@
 
     </table>
 
+    <h2>Add Product</h2>
+
+    <form id="productForm">
+        <input id="storeId" placeholder="Store ID" />
+        <input id="storeName" placeholder="Store Name" />
+        <input id="productId" placeholder="Product ID" />
+        <input id="productName" placeholder="Product Name" />
+        <input id="price" placeholder="Price" />
+
+        <button type="submit">Create Product</button>
+    </form>
+
     <div id="disclaimer">
         Disclaimer: Educational use only. Not an actual store.
     </div>
 
     <script>
+        document.getElementById("productForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const product = {
+                storeId: document.getElementById("storeId").value,
+                storeName: document.getElementById("storeName").value,
+                productId: document.getElementById("productId").value,
+                productName: document.getElementById("productName").value,
+                price: document.getElementById("price").value
+            };
+
+            await fetch("/products", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(product)
+            });
+
+            loadProducts(); // refresh table after insert
+        });
         async function loadProducts() {
             try {
                 const response = await fetch("/products");
