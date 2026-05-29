@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Treats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fcf9e2;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #d96c8a;
+        }
+
+        h2 {
+            color: #538af0;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            color: #538af0;
+        }
+
+        th {
+            background-color: #f8c8dc;
+        }
+
+        tr:hover {
+            background-color: #fff0f5;
+        }
+
+        #disclaimer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #538af0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Sweet Treats</h1>
+    <h2>Products</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Store</th>
+                <th>Products</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+
+        <tbody id="productsTable">
+        </tbody>
+
+    </table>
+
+    <div id="disclaimer">
+        Disclaimer: Educational use only. Not an actual store.
+    </div>
+
+    <script>
+        async function loadProducts() {
+            try {
+                const response = await fetch("/products");
+                const products = await response.json();
+                const table = document.getElementById("productsTable");
+                table.innerHTML = "";
+                products.forEach(product => {
+                    table.innerHTML += `
+                        <tr>
+                            <td>${product.storeName}</td>
+                            <td>${product.productName}</td>
+                            <td>$${product.price}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        loadProducts();
+
+    </script>
+
+</body>
+
+</html>
