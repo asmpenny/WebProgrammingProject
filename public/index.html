@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sweet Treats</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,6 +46,12 @@
             background-color: #fff0f5;
         }
 
+        button {
+            padding: 6px 10px;
+            margin: 2px;
+            cursor: pointer;
+        }
+
         #disclaimer {
             position: fixed;
             bottom: 10px;
@@ -53,25 +60,33 @@
             font-size: 12px;
             color: #538af0;
         }
+
+        input {
+            margin: 5px;
+            padding: 8px;
+        }
     </style>
 </head>
 
 <body>
+
     <h1>Sweet Treats</h1>
+
     <h2>Products</h2>
+
     <button onclick="loadProducts()">Load Products</button>
+
     <table>
         <thead>
             <tr>
                 <th>Store</th>
-                <th>Products</th>
+                <th>Product</th>
                 <th>Price</th>
+                <th>Actions</th>
             </tr>
         </thead>
 
-        <tbody id="productsTable">
-        </tbody>
-
+        <tbody id="productsTable"></tbody>
     </table>
 
     <h2>Add Product</h2>
@@ -91,6 +106,7 @@
     </div>
 
     <script>
+        // CREATE PRODUCT
         document.getElementById("productForm").addEventListener("submit", async (e) => {
             e.preventDefault();
 
@@ -110,29 +126,82 @@
                 body: JSON.stringify(product)
             });
 
-            loadProducts(); // refresh table after insert
+            loadProducts();
+            e.target.reset();
         });
+
+        // READ PRODUCTS
         async function loadProducts() {
             try {
                 const response = await fetch("/products");
                 const products = await response.json();
+
                 const table = document.getElementById("productsTable");
                 table.innerHTML = "";
+
                 products.forEach(product => {
                     table.innerHTML += `
                         <tr>
                             <td>${product.storeName}</td>
                             <td>${product.productName}</td>
                             <td>$${product.price}</td>
+                            <td>
+                                <button onclick="deleteProduct('${product._id}')">Delete</button>
+                                <button onclick="editProduct(
+                                    '${product._id}',
+                                    '${product.storeId}',
+                                    '${product.storeName}',
+                                    '${product.productId}',
+                                    '${product.productName}',
+                                    '${product.price}'
+                                )">Update</button>
+                            </td>
                         </tr>
                     `;
                 });
+
             } catch (err) {
                 console.log(err);
             }
         }
-        loadProducts();
 
+        // DELETE PRODUCT
+        async function deleteProduct(id) {
+            await fetch(`/products/${id}`, {
+                method: "DELETE"
+            });
+
+            loadProducts();
+        }
+
+        // UPDATE PRODUCT
+        async function editProduct(id, storeId, storeName, productId, productName, price) {
+
+            const newStoreName = prompt("Store Name:", storeName);
+            const newProductName = prompt("Product Name:", productName);
+            const newPrice = prompt("Price:", price);
+
+            const updatedProduct = {
+                storeId,
+                storeName: newStoreName,
+                productId,
+                productName: newProductName,
+                price: newPrice
+            };
+
+            await fetch(`/products/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatedProduct)
+            });
+
+            loadProducts();
+        }
+
+        // INITIAL LOAD
+        loadProducts();
     </script>
 
 </body>
