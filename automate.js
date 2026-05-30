@@ -1,15 +1,19 @@
-const { exec } = require("child_process");
 console.log("=== Running Product API Tests ===\n");
 
-// Run products test
-exec("node tests/products.test.js", (err, stdout, stderr) => {
-    if (err) {
-        console.log("Error running tests");
-        console.log(stderr);
-        return;
-    }
+const { execSync } = require("child_process");
+const testAlana = require("./tests/products.test");
 
-    console.log(stdout);
+async function runAllTests() {
+
+    // Run tests sequentially
+    await testAlana();
+    execSync("npx jest product.test.js", {
+        stdio: "inherit",
+    });
 
     console.log("\n=== TEST SUMMARY COMPLETE ===");
-});
+}
+
+runAllTests();
+
+
